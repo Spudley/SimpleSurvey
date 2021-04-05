@@ -1,0 +1,6 @@
+{
+    "/api": {"controller": "Api", "method": "%REQUEST_METHOD"},
+    "/survey": {"template": "home.html"},
+    "/getSubmissions" : {"controller": "Admin", "method": "%REQUEST_METHOD"}
+}
+
