@@ -34,6 +34,20 @@
         eventHandler.setup();
     };
 
+    let storeAnswer = function(validationRequired) {
+        let currentAnswer = d.getElementById('question_'+questions[currentQuestion].name).value;
+        if (validationRequired) {
+            //@todo: this is obviously very basic validation for now.
+            if (currentAnswer == "0") {
+                alert("Please select one of the options.");
+                return false;
+            }
+        }
+        questions[currentQuestion].response = currentAnswer;
+        return true;
+    };
+
+
     let eventHandler = {
         setup: function() {
             let handler = this;
@@ -47,20 +61,21 @@
 
         jump: function(event) {
             let button = event.target;
-            let currentAnswer = d.getElementById('question_'+questions[currentQuestion].name).value;
-            if (button.classList.contains('btn_validate')) {
-                //@todo: this is obviously very basic validation for now.
-                if (currentAnswer == "0") {
-                    alert("Please select one of the options.");
-                    return;
-                }
-            }
+            let validationRequired = button.classList.contains('btn_validate');
             let destination = parseInt(button.id.replace('jumpto_',''));
-            questions[currentQuestion].response = currentAnswer;
+            if (!storeAnswer(validationRequired)) {
+                return;
+            }
             displayQuestion(destination);
         },
 
         finish: function(event) {
+            let button = event.target;
+            let validationRequired = button.classList.contains('btn_validate');
+            if (!storeAnswer(validationRequired)) {
+                return;
+            }
+
             var answers = {};
             questions.forEach(function(question) {
                 answers[question.name] = question.response;
