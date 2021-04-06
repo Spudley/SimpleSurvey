@@ -7,6 +7,7 @@
             caption: "Please tell us your age?",
             type: "select",
             options: ["Please select", "Under 18", "18-30", "31-45", "45-60", "60+"],
+            validate: {minValue: 1},
             response: null
         },
         {
@@ -14,13 +15,14 @@
             caption: "From the following list, which of these is your favourite animal?",
             type: "select",
             options: ["Please select", "Rabbits", "Cats", "Dogs", "Goldfish"],
+            validate: {minValue: 1},
             response: null
         },
         {
             name : 'why',
             caption: "What do you like about this animal?",
             type: "textarea",
-            minWords: 5,
+            validate: {minWords: 5},
             response: ''
         },
     ];
@@ -37,15 +39,29 @@
     let storeAnswer = function(validationRequired) {
         let currentAnswer = d.getElementById('question_'+questions[currentQuestion].name).value;
         if (validationRequired) {
-            //@todo: this is obviously very basic validation for now.
-            if (currentAnswer == "0") {
-                alert("Please select one of the options.");
+            if (!validate(questions[currentQuestion], currentAnswer)) {
                 return false;
             }
         }
         questions[currentQuestion].response = currentAnswer;
         return true;
     };
+
+    let validate = function(question, answer) {
+        if (!question.validate) { return true; }
+        if (question.validate.minValue) {
+            let valid = (answer >= question.validate.minValue);
+            if (!valid) {alert("Please select one of the options.");}
+            return valid;
+        }
+        if (question.validate.minWords) {
+            let valid = (answer.split(/\s+/).length >= question.validate.minWords);
+console.log("min words is valid? "+(valid?'true':'false'));
+            if (!valid) {alert("Please enter at least "+question.validate.minWords+" words.");}
+            return valid;
+        }
+        return true;
+    }
 
 
     let eventHandler = {
@@ -150,7 +166,7 @@
         },
 
         renderFinishButton: function(questionNum) {
-            return this.renderGenericButton('finish', 'btn_finish', "Finish");
+            return this.renderGenericButton('finish', 'btn_finish btn_validate', "Finish");
         },
 
         renderGenericButton: function(id, cls, caption) {
